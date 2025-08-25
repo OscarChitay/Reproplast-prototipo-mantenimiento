@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproplast - Sistema de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #2c2c2c;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: #2c2c2c;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #444;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #7cb342, #8bc34a);
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #4a9eff;
+            margin: 20px;
+            border-radius: 8px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo::before {
+            content: '♻️';
+            font-size: 28px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .company-name {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(124, 179, 66, 0.1);
+            color: #8bc34a;
+            border-left-color: #8bc34a;
+        }
+
+        .menu-item.active {
+            background: rgba(124, 179, 66, 0.2);
+            color: #8bc34a;
+            border-left-color: #7cb342;
+            font-weight: 600;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn {
+            margin: 20px;
+            padding: 12px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #555;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #558b2f;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #666;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+        }
+    </style>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="src/styles/components.css">
+    <link rel="stylesheet" href="src/styles/modules.css">
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"></div>
+                <div class="company-name">REPROPLAST</div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="App.loadModule('dashboard')">
+                    <div class="menu-icon">🏠</div>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('employees')">
+                    <div class="menu-icon">👤</div>
+                    <span>Gestión de Empleados</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('vacations')">
+                    <div class="menu-icon">🌴</div>
+                    <span>Vacaciones</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('advances')">
+                    <div class="menu-icon">💰</div>
+                    <span>Anticipos</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('planilla')">
+                    <div class="menu-icon">📊</div>
+                    <span>Planilla de Pago</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('horas-extra')">
+                    <div class="menu-icon">⏰</div>
+                    <span>Horas Extra</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('prestamos')">
+                    <div class="menu-icon">🏦</div>
+                    <span>Préstamos</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('reclutamiento')">
+                    <div class="menu-icon">🎯</div>
+                    <span>Reclutamiento y Selección</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('asistencia')">
+                    <div class="menu-icon">📅</div>
+                    <span>Control de Asistencia</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('liquidaciones')">
+                    <div class="menu-icon">📋</div>
+                    <span>Liquidaciones</span>
+                </a>
+                
+                <a href="#" class="menu-item" onclick="App.loadModule('maintenance')">
+                    <div class="menu-icon">⚙️</div>
+                    <span>Mantenimiento</span>
+                </a>
+            </div>
+            
+            <button class="logout-btn" onclick="logout()">
+                🚪 Cerrar Sesión
+            </button>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="top-header">
+                <div class="page-title" id="pageTitle">Dashboard</div>
+                <div class="user-info">
+                    <span>👤 Administrador</span>
+                    <span>|</span>
+                    <span id="currentDateTime"></span>
+                </div>
+            </div>
+            
+            <div class="content-area" id="contentArea">
+                <!-- El contenido se carga dinámicamente aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor para modales -->
+    <div id="modalContainer"></div>
+
+    <!-- Scripts -->
+    <script src="src/scripts/app.js"></script>
+    <script src="src/scripts/modal.js"></script>
+    <script src="src/scripts/utils.js"></script>
+    
+    <!-- Módulos -->
+    <script src="src/modules/dashboard.js"></script>
+    <script src="src/modules/employees.js"></script>
+    <script src="src/modules/vacations.js"></script>
+    <script src="src/modules/advances.js"></script>
+    <script src="src/modules/maintenance.js"></script>
+
+    <script>
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            App.init();
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+
+        // Actualizar fecha y hora
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeElement = document.getElementById('currentDateTime');
+            if (dateTimeElement) {
+                dateTimeElement.textContent = now.toLocaleString('es-ES');
+            }
+        }
+
+        // Función de logout
+        function logout() {
+            if (confirm('¿Está seguro de que desea cerrar sesión?')) {
+                Utils.toast.info('Cerrando sesión...');
+                // Aquí iría la lógica de logout
+            }
+        }
+    </script>
+</body>
+</html>

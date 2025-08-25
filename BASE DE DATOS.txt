@@ -1,0 +1,253 @@
+BASE DE DATOS
+PLAZA VACANTE
+nombre, descripcion, requerimientos, formacion_academica, fecha_inicio, fecha_fin, created_at, updated_at, deleted_at, estado, id
+
+POSTULANTES
+nombres, apellidos, dpi, telefono, correo, pretension_salarial, disponibilidad, comentarios, id_vacante, created_at, updates_at, deleted_at, estado, id
+
+EMPRESA
+nombre, direccion, created_at, updated_at, deleted_at, estado, id
+
+REPORTE_MOVIMIENTOS_VACACIONES
+id_empleado, tipo, cantidad, descripcion, fecha
+
+TIPO_PAGO
+descripcion, created_at, estado, id
+
+PLANILLA
+fecha_inicio, fecha_fin, empresa_id, created_at, updated_at, deleted_at, estado, tipo_pago_id, id
+
+REPORTE_PRESTAMOS
+empleado_id, nombres, monto_total, cuotas, estado_pago
+
+REPORTE_DETRALLE_PLANILLA
+planilla_id, fecha_inicio, fecha_fin, empleado_id, nombres, sueldo_base, total_liquidacion
+
+REPORTE_VACACIONES
+empleado_id, nombres, cantidad_dias_disponibles
+
+ANTICIPOS_SALARIALES
+id_empleado, monto_total, fecha_solicitud, cuotas, estado_aprobacion, observaciones, created_at, updated_at, deleted_at, estado, id
+
+HORAS_EXTRA
+id_empleado, cant_hora_bio, cant_hora_autorizada, tipo_solicitud_id, monto_total, crated_at, updated_at, deleted_at, estado, descripcion, tipo_hora_id, id
+
+DETALLE_ANTICIPO
+id_anticipo, numero_cuota, monto, fecha_pago, pagado, created_at, updated_at, deleted_at estado, id
+
+REPORTE_ASISTENCIA_MENSUAL
+id_empleado, fecha_horaentrada_horasalida
+
+REPORTE_HORAS_EXTRA
+empleado_id, nombre, cant_hora, cant_hora_autorizada, monto_total
+
+MOVIMIENTOS_VACACIONES
+id_vacaciones, tipo, cantidad, descripcion, fecha, id
+
+CUOTAS_PRESTAMO
+id_prestamo, numero_cuota, monto, fecha_pago, pagado, created_at, updated_at, deleted_at, estado, id
+
+VACACIONES_DETALLE
+id_vacacion, fecha_solicitud, fecha_inicio, fecha_final, dias_aprobados, created_at, updated_at, deleted_at, id
+
+REPORTE_EMPLEADOS_ACTIVOS
+id, nombres, apellidos, correo, estado
+
+VACACIONES
+id_empleado, cantidad_dias_disponibles, created_at, updated_at, deleted_at, estado, id
+
+ASISTENCIA
+id_empleado, fecha, horaentrada, horasalida, hora_extra_estado, created_at, updated_at, deleted_at, estado, id
+
+REPORTE_ANTICIPO
+empleado_id, nombres, monto_total, cuotas, estado_aprobacion
+
+PRESTAMOS
+id_empleado, monto_total, fecha_solicitud, cuotas, estado_aprobacion, estado_pago, observaciones, created_at, updated_at, deleted_at, estado, id
+
+DETALLE_PLANILLA
+id_planilla, id_empleado, sueld_base, horas_extra, bonificaciones, descuentos, aguinaldo, bono_catorce, vacaciones_proporcional, total_liquido, created_at, updated_at, deleted_at, estado, igss, irtra, id
+
+
+📌 Tabla: departamento
+
+Catálogo de departamentos (división política)
+
+id (integer, PK, autoincrement) → Identificador único
+
+descripcion (text) → Nombre del departamento
+
+created_at (timestamp) → Fecha de alta
+
+updated_at (timestamp) → Fecha de última modificación
+
+deleted_at (timestamp) → Fecha de baja lógica
+
+estado (smallint) → 1 = activo, 0 = inactivo
+
+📌 Tabla: municipio
+
+Catálogo de municipios; pertenece a un departamento
+
+id (integer, PK, autoincrement)
+
+descripcion (text) → Nombre del municipio
+
+id_departamento (integer, FK → departamento.id)
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+📌 Tabla: estado_civil
+
+Catálogo de estados civiles de los empleados
+
+id (integer, PK, autoincrement)
+
+descripcion (text) → Ej. Soltero, Casado
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+📌 Tabla: biometrico
+
+Plantillas o IDs biométricos de empleados (huella, rostro, etc.)
+
+id (integer, PK, autoincrement)
+
+data_biometrico (text) → Dato biométrico en texto/hex/base64
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+📌 Tabla: tipo_contrato
+
+Tipos de contrato laboral (tiempo completo, servicios, etc.)
+
+id (integer, PK, autoincrement)
+
+descripcion (text) → Tipo de contrato
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+📌 Tabla: roles
+
+Roles del sistema (administrador, operador, consulta, etc.)
+
+id (integer, PK, autoincrement)
+
+nombre (text) → Nombre corto del rol
+
+descripcion (text) → Descripción detallada
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+📌 Tabla: usuarios
+
+Usuarios que pueden iniciar sesión en el sistema
+
+id (integer, PK, autoincrement)
+
+nickname (text, único) → Nombre de usuario
+
+password (integer) → Hash de contraseña
+
+rol_id (integer, FK → roles.id)
+
+email (text, único)
+
+created_at (timestamp)
+
+updated_at (timestamp)
+
+deleted_at (timestamp)
+
+estado (smallint)
+
+
+Tabla: empleados
+
+(Datos generales del personal)
+
+nombres – text /* Nombres del empleado */
+
+apellidos – text /* Apellidos del empleado */
+
+dpi – text /* Documento Personal de Identificación */
+
+path_dpi_pdf – text /* Ruta del archivo PDF con el DPI escaneado */
+
+path_cv – text /* Ruta del Currículum Vitae */
+
+path_antecedente_penal – text /* Ruta del certificado de antecedentes penales */
+
+path_antecedente_policia – text /* Ruta del certificado de antecedentes policiales */
+
+path_cartas_recomendacion – text /* Ruta de cartas de recomendación */
+
+path_constancia_laboral – text /* Ruta de constancias laborales previas */
+
+path_contrato – text /* Ruta del contrato firmado */
+
+id_biometrico – integer (FK → biometrico.id)
+
+tipo_contrato_id – integer (FK → tipo_contrato.id)
+
+estado_civil_id – integer (FK → estado_civil.id)
+
+departamento_id – integer (FK → departamento.id) (residencia)
+
+municipio_id – integer (FK → municipio.id) (residencia)
+
+direccion – text /* Dirección completa del empleado */
+
+telefono_domicilio – text /* Teléfono de casa */
+
+telefono_movil – text /* Teléfono móvil */
+
+correo – text /* Correo personal o corporativo */
+
+creado_por – integer (FK → usuarios.id) /* Usuario que creó el registro */
+
+empresa_id – integer (FK → empresa.id)
+
+created_at – timestamp /* Fecha de alta */
+
+updated_at – timestamp /* Fecha de última modificación */
+
+deleted_at – timestamp /* Fecha de baja lógica */
+
+estado – smallint /* 1 = activo | 0 = inactivo */
+
+numero_cuenta – text /* Número de cuenta bancaria para nómina */
+
+tipo_cuenta – text /* Tipo de cuenta bancaria */
+
+id – integer /* Identificador único autoincremental */

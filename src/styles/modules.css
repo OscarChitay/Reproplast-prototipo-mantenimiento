@@ -1,0 +1,390 @@
+/* ================================================
+   ESTILOS DE MÓDULOS - REPROPLAST HR SYSTEM
+   ================================================ */
+
+/* Modal Container */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-container.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+}
+
+.modal-container.show .modal-content {
+    transform: scale(1);
+}
+
+/* Polished modal UI */
+.modal-content .modal-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border-color);
+}
+.modal-header--brand {
+    background: linear-gradient(135deg, #7cb342 0%, #8bc34a 100%);
+    color: var(--text-white);
+    border: none;
+}
+.modal-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.modal-subtitle { margin: 6px 0 0 0; opacity: 0.9; font-size: 0.875rem; }
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #ffffff;
+    z-index: 1;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+.modal-close:hover { background: rgba(255,255,255,0.35); transform: rotate(90deg); }
+
+.modal-body { padding: 24px 28px; max-height: calc(90vh - 120px); overflow-y: auto; }
+.modal-body--with-header { padding-top: 0; }
+.modal-footer { padding: 16px 28px; border-top: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Modal sizes */
+.modal-sm { width: 420px; }
+.modal-md { width: 640px; }
+.modal-lg { width: 920px; }
+.modal-xl { width: 1200px; }
+.modal-full { width: 95vw; height: 90vh; }
+
+/* Dashboard Widgets */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.widget {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.widget:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.widget-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.widget-icon {
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+.widget-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.widget-description {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* Módulo de Empleados */
+.employee-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border-left: 4px solid var(--primary-color);
+}
+
+.employee-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.employee-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.employee-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.employee-info h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.employee-info p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* Módulo de Vacaciones */
+.vacation-card {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.vacation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.vacation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.vacation-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.vacation-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.vacation-dates {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.vacation-date {
+    text-align: center;
+}
+
+.vacation-date span {
+    display: block;
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+}
+
+.vacation-date strong {
+    font-size: var(--font-size-sm);
+}
+
+/* Módulo de Anticipos */
+.advance-card {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--success-color);
+    transition: var(--transition);
+}
+
+.advance-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.advance-amount {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--success-color);
+    margin-bottom: 0.5rem;
+}
+
+.advance-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.advance-status.pending {
+    background: rgba(243, 156, 18, 0.1);
+    color: var(--warning-color);
+}
+
+.advance-status.approved {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--success-color);
+}
+
+.advance-status.rejected {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--accent-color);
+}
+
+/* Módulo de Mantenimiento */
+.maintenance-tab {
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.maintenance-tab.active {
+    background: var(--bg-primary);
+    border-bottom-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.maintenance-tab:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.maintenance-tab-content {
+    display: none;
+}
+
+.maintenance-tab-content.active {
+    display: block;
+}
+
+.table-maintenance-card {
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.table-maintenance-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.table-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.table-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.table-card-info h4 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.table-card-info p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.table-card-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.table-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .vacation-dates {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .maintenance-tab {
+        padding: 0.75rem 1rem;
+        font-size: var(--font-size-sm);
+    }
+}
