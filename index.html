@@ -539,6 +539,14 @@
                 '<p style="color: #666; font-size: 16px; margin-bottom: 10px;">' +
                 'El módulo <strong>' + moduleName + '</strong> está en desarrollo.' +
                 '</p>' +
+                '<div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #7cb342;">' +
+                '<h3 style="color: #7cb342; margin-bottom: 15px;">🧪 Prueba de Nueva Interfaz</h3>' +
+                '<button onclick="testTableCRUD()" style="background: #7cb342; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 5px; transition: all 0.3s;" onmouseover="this.style.background=\'#558b2f\'" onmouseout="this.style.background=\'#7cb342\'">🧪 Probar Nueva Interfaz</button>' +
+                '<button onclick="openTableCRUD(\'empleados\', \'Empleados\')" style="background: #2196f3; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 5px; transition: all 0.3s;" onmouseover="this.style.background=\'#1976d2\'" onmouseout="this.style.background=\'#2196f3\'">👥 Probar Empleados</button>' +
+                '<button onclick="openTableCRUD(\'planilla\', \'Planilla\')" style="background: #ff9800; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 5px; transition: all 0.3s;" onmouseover="this.style.background=\'#f57c00\'" onmouseout="this.style.background=\'#ff9800\'">📊 Probar Planilla</button>' +
+                '</div>' +
+                '<p style="color: #666; font-size: 16px; margin-bottom: 10px;">' +
+                '</p>' +
                 '<p style="color: #999; font-size: 14px;">' +
                 'Próximamente disponible en el sistema Reproplast' +
                 '</p>' +
@@ -1015,49 +1023,206 @@
         }
 
         // Funciones CRUD para las tablas
-        function openTableCRUD(tableName, tableTitle) {
-            console.log('Abriendo CRUD para:', tableName, tableTitle);
+        function openTableCRUD(tableName, tableTitle, tableInfo) {
+            console.log('🔧 INICIANDO GESTIÓN COMPLETA');
+            console.log('Table Name:', tableName);
+            console.log('Table Title:', tableTitle);
+            console.log('Table Info:', tableInfo);
             
-            Modal.show({
-                title: `✏️ Gestión de ${tableTitle}`,
-                content: `
-                    <div style="padding: 20px;">
-                        <div style="background: #f1f8e9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #7cb342;">
-                            <h4 style="margin: 0 0 10px 0; color: #558b2f;">🗃️ Panel de Control - ${tableTitle}</h4>
-                            <p style="margin: 0; color: #6a6a6a;">Gestión completa de datos de la tabla <strong>${tableName}</strong></p>
+            // Parsear la información de la tabla si viene como string
+            let table = tableInfo;
+            if (typeof tableInfo === 'string') {
+                try {
+                    table = JSON.parse(tableInfo.replace(/&quot;/g, '"'));
+                } catch (e) {
+                    console.error('Error parsing table info:', e);
+                    table = { name: tableName, title: tableTitle, fields: [], color: '#7cb342' };
+                }
+            }
+
+            console.log('Parsed table:', table);
+
+            // Generar datos de muestra realistas
+            const sampleData = generateRealisticSampleData(tableName, table.fields || []);
+            console.log('Sample data generated:', sampleData.length, 'records');
+
+            // Cambiar el título de la página
+            const pageTitle = document.getElementById('pageTitle');
+            if (pageTitle) {
+                pageTitle.textContent = `Gestión de ${tableTitle}`;
+                console.log('Page title updated to:', `Gestión de ${tableTitle}`);
+            }
+
+            // Reemplazar el contenido del área principal
+            const contentArea = document.getElementById('contentArea');
+            if (!contentArea) {
+                console.error('Content area not found!');
+                return;
+            }
+
+            console.log('Replacing content area...');
+            contentArea.innerHTML = `
+                <!-- Header de la tabla con información y acciones -->
+                <div style="background: linear-gradient(135deg, ${table.color || '#7cb342'}15, ${table.color || '#7cb342'}08); padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid ${table.color || '#7cb342'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div style="font-size: 48px; background: ${table.color || '#7cb342'}; color: white; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 80px; height: 80px;">
+                                ${table.icon || '📋'}
+                            </div>
+                            <div>
+                                <h2 style="margin: 0 0 8px 0; color: ${table.color || '#7cb342'}; font-size: 28px; font-weight: 700;">📊 ${tableTitle}</h2>
+                                <p style="margin: 0 0 5px 0; color: #34495e; font-size: 16px;">${table.description || `Gestión completa de datos de la tabla ${tableName}`}</p>
+                                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                                    <span style="background: white; color: ${table.color || '#7cb342'}; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        📊 ${sampleData.length} registros
+                                    </span>
+                                    <span style="background: white; color: ${table.color || '#7cb342'}; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        🗃️ ${(table.fields || []).length} campos
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                            <button onclick="showTableData('${tableName}', '${tableTitle}')" 
-                                    style="background: #7cb342; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                📋 Ver Registros
-                            </button>
-                            <button onclick="addTableRecord('${tableName}', '${tableTitle}')" 
-                                    style="background: #558b2f; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                ➕ Agregar Nuevo
+                        <button onclick="setActiveModule('maintenance', 'Mantenimiento')" 
+                                style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;"
+                                onmouseover="this.style.background='#5a6268'" 
+                                onmouseout="this.style.background='#6c757d'">
+                            ← Volver a Tablas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra de herramientas y acciones -->
+                <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <button onclick="showAddRecordForm('${tableName}', '${tableTitle}', '${JSON.stringify(table).replace(/'/g, '\\\'')}')" 
+                                    style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(40, 167, 69, 0.4)'" 
+                                    onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 12px rgba(40, 167, 69, 0.3)'">
+                                ➕ Nuevo Registro
                             </button>
                             <button onclick="importTableData('${tableName}', '${tableTitle}')" 
-                                    style="background: #2e7d32; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                📥 Importar Datos
+                                    style="background: linear-gradient(135deg, #17a2b8, #20c997); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.transform='translateY(-2px)'" 
+                                    onmouseout="this.style.transform='translateY(0px)'">
+                                📥 Importar
                             </button>
-                            <button onclick="backupTable('${tableName}', '${tableTitle}')" 
-                                    style="background: #4caf50; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                💾 Respaldar
+                            <button onclick="exportTableData('${tableName}', '${tableTitle}')" 
+                                    style="background: linear-gradient(135deg, #fd7e14, #e67e22); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.transform='translateY(-2px)'" 
+                                    onmouseout="this.style.transform='translateY(0px)'">
+                                📤 Exportar
                             </button>
                         </div>
-                        
-                        <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
-                            <h5 style="margin: 0 0 10px 0; color: #f57c00;">⚠️ Operaciones Avanzadas</h5>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <button onclick="optimizeTable('${tableName}')" style="background: #ff9800; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">🚀 Optimizar</button>
-                                <button onclick="truncateTable('${tableName}')" style="background: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">🗑️ Vaciar</button>
-                                <button onclick="analyzeTable('${tableName}', '${tableTitle}')" style="background: #9c27b0; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">📈 Analizar</button>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="searchTable" placeholder="🔍 Buscar en la tabla..." 
+                                   style="padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; width: 250px; transition: all 0.3s;" 
+                                   onkeyup="filterTableData(this.value)"
+                                   onfocus="this.style.borderColor='${table.color || '#7cb342'}'; this.style.boxShadow='0 0 0 3px ${table.color || '#7cb342'}20'"
+                                   onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
+                            <select id="filterField" style="padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;" onchange="filterTableData()">
+                                <option value="">Todos los campos</option>
+                                ${(table.fields || []).map(field => `<option value="${field}">${field}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de datos principal -->
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <div style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
+                        <table id="dataTable" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                            <thead style="position: sticky; top: 0; z-index: 10;">
+                                <tr style="background: linear-gradient(135deg, ${table.color || '#7cb342'}, ${table.color || '#689f38'});">
+                                    <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 80px;">
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="margin-right: 8px;">
+                                        ID
+                                    </th>
+                                    ${(table.fields || []).filter(field => field !== 'id').map(field => `
+                                        <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 120px;">
+                                            ${field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}
+                                        </th>
+                                    `).join('')}
+                                    <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 150px;">
+                                        🔧 Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                ${sampleData.map((row, index) => {
+                                    const rowId = row.id || index + 1;
+                                    return `
+                                        <tr style="transition: all 0.2s; border-bottom: 1px solid #e8e8e8;" 
+                                            onmouseover="this.style.backgroundColor='#f8f9fa'" 
+                                            onmouseout="this.style.backgroundColor='white'"
+                                            data-row-id="${rowId}">
+                                            <td style="padding: 12px; vertical-align: middle; font-weight: 600; color: #666;">
+                                                <input type="checkbox" class="row-checkbox" value="${rowId}" style="margin-right: 8px;">
+                                                #${rowId}
+                                            </td>
+                                            ${(table.fields || []).filter(field => field !== 'id').map(field => {
+                                                const value = row[field] || generateFieldValue(field, index);
+                                                return `<td style="padding: 12px; vertical-align: middle; font-size: 14px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${value}">${value}</td>`;
+                                            }).join('')}
+                                            <td style="padding: 12px; text-align: center; vertical-align: middle;">
+                                                <div style="display: flex; gap: 6px; justify-content: center;">
+                                                    <button onclick="viewRecord('${tableName}', ${rowId})" 
+                                                            style="background: #17a2b8; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                            title="Ver detalles"
+                                                            onmouseover="this.style.background='#138496'" 
+                                                            onmouseout="this.style.background='#17a2b8'">
+                                                        👁️
+                                                    </button>
+                                                    <button onclick="editRecord('${tableName}', ${rowId}, '${JSON.stringify(table).replace(/'/g, '\\\'')}')" 
+                                                            style="background: #ffc107; color: #212529; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                            title="Editar registro"
+                                                            onmouseover="this.style.background='#e0a800'" 
+                                                            onmouseout="this.style.background='#ffc107'">
+                                                        ✏️
+                                                    </button>
+                                                    <button onclick="deleteRecord('${tableName}', ${rowId})" 
+                                                            style="background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                            title="Eliminar registro"
+                                                            onmouseover="this.style.background='#c82333'" 
+                                                            onmouseout="this.style.background='#dc3545'">
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer con paginación y acciones masivas -->
+                    <div style="padding: 20px; background: #f8f9fa; border-top: 1px solid #e9ecef;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <span style="color: #666; font-size: 14px;">Mostrando ${sampleData.length} registros</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="deleteSelectedRecords('${tableName}')" 
+                                            style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; opacity: 0.6;" 
+                                            id="deleteSelectedBtn" disabled>
+                                        🗑️ Eliminar Seleccionados
+                                    </button>
+                                    <button onclick="exportSelectedRecords('${tableName}')" 
+                                            style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; opacity: 0.6;" 
+                                            id="exportSelectedBtn" disabled>
+                                        � Exportar Seleccionados
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <button style="padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 13px;" disabled>‹ Anterior</button>
+                                <button style="padding: 8px 12px; border: 1px solid ${table.color || '#7cb342'}; background: ${table.color || '#7cb342'}; color: white; border-radius: 4px; font-size: 13px;">1</button>
+                                <button style="padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 13px;" disabled>Siguiente ›</button>
                             </div>
                         </div>
                     </div>
-                `,
-                size: 'large'
-            });
+                </div>
+            `;
         }
 
         function showTableData(tableName, tableTitle) {
@@ -1246,12 +1411,19 @@
             }
         }
 
-        function saveNewRecord(tableName) {
-            Utils.toast.loading('💾 Guardando nuevo registro...');
+        function saveNewRecord(tableName, tableTitle) {
+            // Simular guardado
+            alert('💾 Guardando nuevo registro...');
             setTimeout(() => {
-                Utils.toast.success(`✅ Nuevo registro de ${tableName} creado exitosamente`);
+                alert(`✅ Nuevo registro de ${tableTitle} creado exitosamente`);
                 Modal.hide();
-            }, 1500);
+                // Recargar la vista de tabla si está abierta
+                const pageTitle = document.getElementById('pageTitle');
+                if (pageTitle && pageTitle.textContent.includes('Gestión de')) {
+                    // Recargar los datos de la tabla actual
+                    location.reload();
+                }
+            }, 1000);
         }
 
         function importTableData(tableName, tableTitle) {
@@ -1561,7 +1733,387 @@
         function closeModal(modalId) { const el=document.getElementById(modalId); if(el) el.style.display='none'; }
         function showTab(tabName) { document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); const c=document.getElementById(tabName); if(c) c.classList.add('active'); if (event && event.target) { event.target.classList.add('active'); } }
 
-        // Actualizar fecha y hora
+        // Simple Modal System
+        const Modal = {
+            show: function(options) {
+                // Remove existing modal if any
+                const existingModal = document.getElementById('dynamicModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Create modal
+                const modal = document.createElement('div');
+                modal.id = 'dynamicModal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                `;
+
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background: white;
+                    border-radius: 12px;
+                    max-width: ${options.size === 'large' ? '90%' : '600px'};
+                    max-height: 90%;
+                    overflow-y: auto;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                `;
+
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    background: linear-gradient(135deg, #7cb342, #8bc34a);
+                    color: white;
+                    padding: 20px 30px;
+                    border-radius: 12px 12px 0 0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+                const title = document.createElement('h2');
+                title.textContent = options.title;
+                title.style.cssText = 'margin: 0; font-size: 18px; font-weight: 600;';
+
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = '×';
+                closeBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 24px;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                `;
+                closeBtn.onclick = () => Modal.hide();
+
+                header.appendChild(title);
+                header.appendChild(closeBtn);
+
+                const body = document.createElement('div');
+                body.innerHTML = options.content;
+
+                modalContent.appendChild(header);
+                modalContent.appendChild(body);
+                modal.appendChild(modalContent);
+
+                document.body.appendChild(modal);
+
+                // Close on background click
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        Modal.hide();
+                    }
+                });
+            },
+
+            hide: function() {
+                const modal = document.getElementById('dynamicModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        };
+
+        // Funciones para la nueva interfaz de tabla
+        function generateRealisticSampleData(tableName, fields) {
+            // Función para generar datos realistas basados en la estructura real de las tablas
+            const dataGenerators = {
+                id: (index) => index + 1,
+                nombres: () => ['Juan Carlos', 'María Elena', 'Roberto', 'Ana Sofía', 'Luis Miguel', 'Carmen Rosa', 'Pedro', 'Lucía', 'Diego', 'Patricia'][Math.floor(Math.random() * 10)],
+                apellidos: () => ['García López', 'Martínez Silva', 'Rodríguez Torres', 'Hernández Castro', 'López Morales', 'González Ruiz', 'Pérez Jiménez', 'Sánchez Vargas', 'Ramírez Cruz', 'Torres Mendoza'][Math.floor(Math.random() * 10)],
+                dpi: () => `${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 900000000 + 100000000)}`,
+                telefono: () => `${Math.floor(Math.random() * 9000 + 1000)}-${Math.floor(Math.random() * 9000 + 1000)}`,
+                email: (index, nombres = 'usuario') => `${nombres.toLowerCase().replace(' ', '.')}${index}@reproplast.com`,
+                correo: (index, nombres = 'usuario') => `${nombres.toLowerCase().replace(' ', '.')}${index}@reproplast.com`,
+                direccion: () => ['Av. Principal #123', 'Calle Central 45-67', 'Barrio Los Almendros', 'Zona Industrial Km 15', 'Sector El Progreso'][Math.floor(Math.random() * 5)],
+                fecha_nacimiento: () => {
+                    const year = Math.floor(Math.random() * 30) + 1970;
+                    const month = Math.floor(Math.random() * 12) + 1;
+                    const day = Math.floor(Math.random() * 28) + 1;
+                    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                },
+                created_at: () => new Date().toISOString().split('T')[0],
+                updated_at: () => new Date().toISOString().split('T')[0],
+                fecha: () => new Date().toISOString().split('T')[0],
+                fecha_inicio: () => new Date().toISOString().split('T')[0],
+                fecha_fin: () => {
+                    const date = new Date();
+                    date.setMonth(date.getMonth() + Math.floor(Math.random() * 12) + 1);
+                    return date.toISOString().split('T')[0];
+                },
+                monto: () => `Q${(Math.floor(Math.random() * 5000) + 100).toLocaleString()}`,
+                monto_total: () => `Q${(Math.floor(Math.random() * 15000) + 500).toLocaleString()}`,
+                sueldo_base: () => `Q${(Math.floor(Math.random() * 8000) + 2500).toLocaleString()}`,
+                sueld_base: () => `Q${(Math.floor(Math.random() * 8000) + 2500).toLocaleString()}`,
+                cantidad: () => Math.floor(Math.random() * 100) + 1,
+                cuotas: () => Math.floor(Math.random() * 24) + 1,
+                descripcion: () => ['Pago adelantado', 'Emergencia médica', 'Gastos educativos', 'Reparación vehículo', 'Gastos familiares'][Math.floor(Math.random() * 5)],
+                observaciones: () => ['Aprobado', 'En revisión', 'Pendiente', 'Completado', 'Cancelado'][Math.floor(Math.random() * 5)],
+                estado: () => ['Activo', 'Inactivo', 'Pendiente', 'Procesando'][Math.floor(Math.random() * 4)],
+                estado_aprobacion: () => ['Aprobado', 'Rechazado', 'Pendiente'][Math.floor(Math.random() * 3)],
+                nickname: (index) => `usuario${index + 1}`,
+                password: () => '••••••••',
+                rol_id: () => Math.floor(Math.random() * 5) + 1,
+                empresa_id: () => 1,
+                tipo_pago_id: () => Math.floor(Math.random() * 4) + 1
+            };
+
+            function generateFieldValue(fieldName, index) {
+                const lowerField = fieldName.toLowerCase();
+                
+                for (const [pattern, generator] of Object.entries(dataGenerators)) {
+                    if (lowerField.includes(pattern) || lowerField === pattern) {
+                        return typeof generator === 'function' ? generator(index) : generator;
+                    }
+                }
+                
+                if (lowerField.includes('fecha')) return dataGenerators.fecha();
+                if (lowerField.includes('monto') || lowerField.includes('valor')) return dataGenerators.monto();
+                if (lowerField.includes('cantidad') || lowerField.includes('numero')) return dataGenerators.cantidad();
+                if (lowerField.includes('estado')) return dataGenerators.estado();
+                if (lowerField.includes('descripcion') || lowerField.includes('observacion')) return dataGenerators.descripcion();
+                
+                return `Valor ${index + 1}`;
+            }
+
+            const sampleSize = Math.min(Math.floor(Math.random() * 15) + 8, 20);
+            const sampleData = [];
+
+            for (let i = 0; i < sampleSize; i++) {
+                const record = {};
+                fields.forEach(field => {
+                    record[field] = generateFieldValue(field, i);
+                });
+                sampleData.push(record);
+            }
+
+            return sampleData;
+        }
+
+        function generateFieldValue(fieldName, index) {
+            const lowerField = fieldName.toLowerCase();
+            
+            if (lowerField.includes('nombre')) return ['Juan Carlos', 'María Elena', 'Roberto'][index % 3];
+            if (lowerField.includes('email') || lowerField.includes('correo')) return `usuario${index + 1}@reproplast.com`;
+            if (lowerField.includes('fecha')) return new Date().toISOString().split('T')[0];
+            if (lowerField.includes('monto')) return `Q${(Math.floor(Math.random() * 5000) + 100).toLocaleString()}`;
+            if (lowerField.includes('estado')) return ['Activo', 'Inactivo', 'Pendiente'][index % 3];
+            
+            return `Dato ${index + 1}`;
+        }
+
+        function showAddRecordForm(tableName, tableTitle, tableInfo) {
+            let table = tableInfo;
+            if (typeof tableInfo === 'string') {
+                try {
+                    table = JSON.parse(tableInfo.replace(/&quot;/g, '"'));
+                } catch (e) {
+                    table = { name: tableName, title: tableTitle, fields: [], color: '#7cb342' };
+                }
+            }
+
+            const formFields = generateFormFields(table.fields || [], tableName);
+
+            Modal.show({
+                title: `➕ Nuevo Registro - ${tableTitle}`,
+                content: `
+                    <div style="padding: 25px;">
+                        <div style="background: linear-gradient(135deg, ${table.color || '#27ae60'}15, ${table.color || '#27ae60'}08); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid ${table.color || '#27ae60'};">
+                            <h4 style="margin: 0 0 5px 0; color: ${table.color || '#27ae60'}; font-size: 18px; font-weight: 700;">✨ Crear Nuevo Registro</h4>
+                            <p style="margin: 0; color: #34495e; font-size: 14px;">Complete la información para agregar un nuevo registro a ${tableTitle}</p>
+                        </div>
+                        
+                        <form id="newRecordForm" style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+                            ${formFields}
+                            
+                            <div style="display: flex; gap: 12px; margin-top: 25px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+                                <button type="button" onclick="Modal.hide()" 
+                                        style="background: #95a5a6; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1;">
+                                    ❌ Cancelar
+                                </button>
+                                <button type="button" onclick="saveNewRecord('${tableName}', '${tableTitle}')" 
+                                        style="background: ${table.color || '#27ae60'}; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1;">
+                                    💾 Guardar Registro
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `,
+                size: 'large'
+            });
+        }
+
+        function generateFormFields(fields, tableName) {
+            if (!fields || fields.length === 0) {
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Nombre: <span style="color: #e74c3c;">*</span></label>
+                        <input type="text" name="nombre" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" required>
+                    </div>
+                `;
+            }
+
+            return fields.map(field => {
+                const fieldLower = field.toLowerCase();
+                const isRequired = fieldLower === 'id' || fieldLower.includes('nombres') || fieldLower.includes('descripcion') ? true : false;
+                const requiredMark = isRequired ? '<span style="color: #e74c3c;">*</span>' : '';
+                
+                let inputElement = '';
+
+                if (fieldLower === 'id') {
+                    inputElement = `<input type="text" name="${field}" value="[Auto-generado]" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; background-color: #f8f9fa; color: #6c757d;" readonly>`;
+                } else if (fieldLower.includes('fecha')) {
+                    inputElement = `<input type="date" name="${field}" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" value="${new Date().toISOString().split('T')[0]}">`;
+                } else if (fieldLower.includes('email') || fieldLower.includes('correo')) {
+                    inputElement = `<input type="email" name="${field}" placeholder="usuario@reproplast.com" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" ${isRequired ? 'required' : ''}>`;
+                } else if (fieldLower.includes('monto') || fieldLower.includes('salario')) {
+                    inputElement = `<input type="number" name="${field}" placeholder="0.00" step="0.01" min="0" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" ${isRequired ? 'required' : ''}>`;
+                } else if (fieldLower.includes('cantidad') || fieldLower.includes('cuotas') || fieldLower.includes('numero')) {
+                    inputElement = `<input type="number" name="${field}" placeholder="0" min="0" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" ${isRequired ? 'required' : ''}>`;
+                } else if (fieldLower.includes('estado')) {
+                    inputElement = `
+                        <select name="${field}" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" ${isRequired ? 'required' : ''}>
+                            <option value="">Seleccione...</option>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>`;
+                } else if (fieldLower.includes('descripcion') || fieldLower.includes('observacion') || fieldLower.includes('comentario')) {
+                    inputElement = `<textarea name="${field}" placeholder="Ingrese ${field.toLowerCase()}" rows="3" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; resize: vertical;" ${isRequired ? 'required' : ''}></textarea>`;
+                } else {
+                    inputElement = `<input type="text" name="${field}" placeholder="Ingrese ${field.toLowerCase()}" style="width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px;" ${isRequired ? 'required' : ''}>`;
+                }
+
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">
+                            ${field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}: ${requiredMark}
+                        </label>
+                        ${inputElement}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterTableData(searchValue) {
+            const table = document.getElementById('dataTable');
+            const tbody = document.getElementById('tableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            
+            if (!searchValue) searchValue = document.getElementById('searchTable').value;
+            const filterValue = searchValue.toLowerCase();
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filterValue) ? '' : 'none';
+            }
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const exportBtn = document.getElementById('exportSelectedBtn');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateSelectedButtons();
+        }
+
+        function updateSelectedButtons() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const exportBtn = document.getElementById('exportSelectedBtn');
+            
+            if (checkboxes.length > 0) {
+                deleteBtn.style.opacity = '1';
+                deleteBtn.disabled = false;
+                exportBtn.style.opacity = '1';
+                exportBtn.disabled = false;
+            } else {
+                deleteBtn.style.opacity = '0.6';
+                deleteBtn.disabled = true;
+                exportBtn.style.opacity = '0.6';
+                exportBtn.disabled = true;
+            }
+        }
+
+        function deleteSelectedRecords(tableName) {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) return;
+            
+            if (confirm(`¿Está seguro de que desea eliminar ${checkboxes.length} registros seleccionados?`)) {
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    row.remove();
+                });
+                alert(`${checkboxes.length} registros eliminados exitosamente`);
+                updateSelectedButtons();
+            }
+        }
+
+        function exportSelectedRecords(tableName) {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) return;
+            
+            alert(`Exportando ${checkboxes.length} registros seleccionados de ${tableName}`);
+        }
+
+        // Agregar event listeners a los checkboxes cuando se cargue la página
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('row-checkbox')) {
+                updateSelectedButtons();
+            }
+        });
+
+        function editRecord(tableName, recordId, tableInfo) {
+            let table = tableInfo;
+            if (typeof tableInfo === 'string') {
+                try {
+                    table = JSON.parse(tableInfo.replace(/&quot;/g, '"'));
+                } catch (e) {
+                    table = { name: tableName, title: tableName, fields: [], color: '#7cb342' };
+                }
+            }
+
+            alert(`✏️ Editando registro #${recordId} de ${tableName}`);
+            // Aquí se implementaría la lógica de edición con un modal similar al de crear
+        }
+
+        // Test function for debugging
+        function testTableCRUD() {
+            console.log('🧪 Testing Table CRUD functionality...');
+            const testTable = {
+                name: 'empleados',
+                title: 'Empleados',
+                icon: '👤',
+                color: '#3498db',
+                fields: ['id', 'nombres', 'apellidos', 'email', 'telefono', 'estado']
+            };
+            openTableCRUD('empleados', 'Empleados', testTable);
+        }
+
+        // Make functions globally accessible for debugging
+        window.testTableCRUD = testTableCRUD;
+        window.openTableCRUD = openTableCRUD;
         function updateDateTime() {
             const now = new Date();
             const dateTimeElement = document.getElementById('currentDateTime');
@@ -1587,15 +2139,15 @@
     </script>
     
     <!-- Scripts modulares opcionales -->
-    <script src="src/scripts/app.js"></script>
+    <!-- <script src="src/scripts/app.js"></script>
     <script src="src/scripts/modal.js"></script>
     <script src="src/scripts/utils.js"></script>
     
-    <!-- Módulos -->
+    Módulos
     <script src="src/modules/dashboard.js"></script>
     <script src="src/modules/employees.js"></script>
     <script src="src/modules/vacations.js"></script>
     <script src="src/modules/advances.js"></script>
-    <script src="src/modules/maintenance.js"></script>
+    <script src="src/modules/maintenance.js"></script> -->
 </body>
 </html>
