@@ -160,7 +160,17 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
+            overflow-x: hidden;
             background: #f8f9fa;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Control específico para tablas en módulo de mantenimiento */
+        #contentArea {
+            max-width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
         }
 
         /* Responsive */
@@ -593,38 +603,48 @@
         }
 
         function getMaintenanceModuleContent() {
+            // Forzar actualización con timestamp
+            console.log('🔧 Renderizando módulo de mantenimiento...', new Date().toLocaleTimeString());
             return `
-                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; max-width: 100%; overflow: hidden;">
                     <div style="margin-bottom: 30px;">
                         <h2 style="color: #558b2f; margin: 0 0 10px 0; font-size: 24px;">🔧 Mantenimiento del Sistema</h2>
                         <p style="color: #666; margin: 0; font-size: 16px;">Administración de tablas y configuración del sistema Reproplast</p>
+                        <small style="color: #999; font-size: 12px;">Actualizado: ${new Date().toLocaleString()}</small>
                     </div>
 
                     <!-- Navegación de pestañas -->
                     <div style="border-bottom: 2px solid #e9ecef; margin-bottom: 30px;">
-                        <div style="display: flex; gap: 5px;">
-                            <button onclick="showMaintenanceTab('tables')" id="tab-tables" class="maintenance-tab-btn active" style="background: #7cb342; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
-                                📊 Tablas
-                            </button>
-                            <button onclick="showMaintenanceTab('users')" id="tab-users" class="maintenance-tab-btn" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
-                                👥 Usuarios
-                            </button>
-                            <button onclick="showMaintenanceTab('system')" id="tab-system" class="maintenance-tab-btn" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
-                                ⚙️ Sistema
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <button onclick="showMaintenanceTab('tables')" id="tab-tables" class="maintenance-tab-btn active" style="background: #7cb342; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
+                                    📊 Tablas
+                                </button>
+                                <button onclick="showMaintenanceTab('users')" id="tab-users" class="maintenance-tab-btn" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
+                                    👥 Usuarios
+                                </button>
+                                <button onclick="showMaintenanceTab('system')" id="tab-system" class="maintenance-tab-btn" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600;">
+                                    ⚙️ Sistema
+                                </button>
+                            </div>
+                            <button onclick="forceRefreshMaintenance()" 
+                                    style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"
+                                    title="Recargar contenido">
+                                🔄 Actualizar
                             </button>
                         </div>
                     </div>
 
                     <!-- Contenido de pestañas -->
-                    <div id="tables-tab" class="maintenance-tab-content">
+                    <div id="tables-tab" class="maintenance-tab-content" style="max-width: 100%; overflow: hidden;">
                         ${getTablesContent()}
                     </div>
 
-                    <div id="users-tab" class="maintenance-tab-content" style="display: none;">
+                    <div id="users-tab" class="maintenance-tab-content" style="display: none; max-width: 100%; overflow: hidden;">
                         ${getUsersTabContent()}
                     </div>
 
-                    <div id="system-tab" class="maintenance-tab-content" style="display: none;">
+                    <div id="system-tab" class="maintenance-tab-content" style="display: none; max-width: 100%; overflow: hidden;">
                         ${getSystemTabContent()}
                     </div>
                 </div>
@@ -633,6 +653,7 @@
 
         // Funciones para el módulo de mantenimiento
         function showMaintenanceTab(tabName) {
+            console.log(`🔄 Cambiando a pestaña: ${tabName}`);
             // Ocultar todas las pestañas
             const tabs = document.querySelectorAll('.maintenance-tab-content');
             tabs.forEach(tab => tab.style.display = 'none');
@@ -650,21 +671,35 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 
+        // Función para forzar actualización del módulo de mantenimiento
+        function forceRefreshMaintenance() {
+            console.log('🔄 Forzando actualización del módulo de mantenimiento...');
+            const contentArea = document.querySelector('.content-area');
+            if (contentArea) {
+                contentArea.innerHTML = getMaintenanceModuleContent();
+                showNotification('✅ Módulo de mantenimiento actualizado', 'success');
+            }
+        }
+
         function getTablesContent() {
+            console.log('📊 Generando contenido de tablas...');
+            const tablesHTML = generateTableCardsHTML();
+            console.log('✅ HTML de tablas generado, longitud:', tablesHTML.length);
             return `
                 <div style="margin-bottom: 25px;">
                     <h3 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 20px;">📊 Administración de Tablas</h3>
                     <p style="color: #7f8c8d; margin: 0; font-size: 14px;">Gestionar CRUD completo de todas las tablas de la base de datos</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                    ${getTableCards()}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 100%; overflow: hidden;">
+                    ${tablesHTML}
                 </div>
             `;
         }
 
+        // Función que devuelve el array de datos de las tablas
         function getTableCards() {
-            const tables = [
+            return [
                 // === GESTIÓN DE PERSONAL ===
                 { 
                     name: 'empleados', 
@@ -909,6 +944,13 @@
                     fields: ['id', 'data_biometrico', 'created_at', 'updated_at', 'deleted_at', 'estado']
                 }
             ];
+        }
+
+        // Función que genera el HTML de las cartas de tablas
+        function generateTableCardsHTML() {
+            console.log('🎨 Generando HTML de cartas de tablas...');
+            const tables = getTableCards();
+            console.log('📋 Tablas obtenidas:', tables.length);
 
             // Agrupar por categorías
             const categories = {
@@ -1095,7 +1137,7 @@
                 <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div style="display: flex; gap: 15px; align-items: center;">
-                            <button onclick="showAddRecordForm('${tableName}', '${tableTitle}', '${JSON.stringify(table).replace(/'/g, '\\\'')}')" 
+                            <button onclick="createNewRecord('${tableName}')" 
                                     style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(40, 167, 69, 0.4)'" 
                                     onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 12px rgba(40, 167, 69, 0.3)'">
@@ -1129,21 +1171,21 @@
                 </div>
 
                 <!-- Tabla de datos principal -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    <div style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
-                        <table id="dataTable" style="width: 100%; border-collapse: collapse; min-width: 800px;">
-                            <thead style="position: sticky; top: 0; z-index: 10;">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 100%; margin: 0 auto;">
+                    <div style="overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 300px); width: 100%; max-width: calc(100vw - 280px); position: relative;">
+                        <table id="dataTable" style="width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px;">
+                            <thead style="position: sticky; top: 0; z-index: 20;">
                                 <tr style="background: linear-gradient(135deg, ${table.color || '#7cb342'}, ${table.color || '#689f38'});">
-                                    <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 80px;">
-                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="margin-right: 8px;">
+                                    <th style="padding: 12px 8px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 13px; width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 0; background: ${table.color || '#7cb342'}; z-index: 21; box-shadow: 2px 0 4px rgba(0,0,0,0.1);">
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="margin-right: 4px; transform: scale(0.9);">
                                         ID
                                     </th>
                                     ${(table.fields || []).filter(field => field !== 'id').map(field => `
-                                        <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 120px;">
+                                        <th style="padding: 12px 8px; color: white; font-weight: 600; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 13px; width: 150px; min-width: 120px; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}
                                         </th>
                                     `).join('')}
-                                    <th style="padding: 15px 12px; color: white; font-weight: 600; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 14px; min-width: 150px;">
+                                    <th style="padding: 12px 8px; color: white; font-weight: 600; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); font-size: 13px; width: 140px; min-width: 140px; max-width: 140px; position: sticky; right: 0; background: ${table.color || '#7cb342'}; z-index: 21; box-shadow: -2px 0 4px rgba(0,0,0,0.1);">
                                         🔧 Acciones
                                     </th>
                                 </tr>
@@ -1156,32 +1198,32 @@
                                             onmouseover="this.style.backgroundColor='#f8f9fa'" 
                                             onmouseout="this.style.backgroundColor='white'"
                                             data-row-id="${rowId}">
-                                            <td style="padding: 12px; vertical-align: middle; font-weight: 600; color: #666;">
-                                                <input type="checkbox" class="row-checkbox" value="${rowId}" style="margin-right: 8px;">
+                                            <td style="padding: 10px 8px; vertical-align: middle; font-weight: 600; color: #666; width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 0; background: white; z-index: 2; border-right: 1px solid #e8e8e8; box-shadow: 2px 0 4px rgba(0,0,0,0.05);">
+                                                <input type="checkbox" class="row-checkbox" value="${rowId}" onchange="updateBulkActionsVisibility()" style="margin-right: 4px; transform: scale(0.9);">
                                                 #${rowId}
                                             </td>
                                             ${(table.fields || []).filter(field => field !== 'id').map(field => {
                                                 const value = row[field] || generateFieldValue(field, index);
-                                                return `<td style="padding: 12px; vertical-align: middle; font-size: 14px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${value}">${value}</td>`;
+                                                return `<td style="padding: 10px 8px; vertical-align: middle; font-size: 13px; width: 150px; min-width: 120px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-bottom: 1px solid #f0f0f0;" title="${value}">${value}</td>`;
                                             }).join('')}
-                                            <td style="padding: 12px; text-align: center; vertical-align: middle;">
-                                                <div style="display: flex; gap: 6px; justify-content: center;">
+                                            <td style="padding: 10px 8px; text-align: center; vertical-align: middle; width: 140px; min-width: 140px; max-width: 140px; position: sticky; right: 0; background: white; z-index: 2; border-left: 1px solid #e8e8e8; box-shadow: -2px 0 4px rgba(0,0,0,0.05);">
+                                                <div style="display: flex; gap: 4px; justify-content: center;">
                                                     <button onclick="viewRecord('${tableName}', ${rowId})" 
-                                                            style="background: #17a2b8; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                            style="background: #17a2b8; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.3s;" 
                                                             title="Ver detalles"
                                                             onmouseover="this.style.background='#138496'" 
                                                             onmouseout="this.style.background='#17a2b8'">
                                                         👁️
                                                     </button>
-                                                    <button onclick="editRecord('${tableName}', ${rowId}, '${JSON.stringify(table).replace(/'/g, '\\\'')}')" 
-                                                            style="background: #ffc107; color: #212529; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                    <button onclick="editRecord('${tableName}', ${rowId}, this)" 
+                                                            style="background: #ffc107; color: #212529; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.3s;" 
                                                             title="Editar registro"
                                                             onmouseover="this.style.background='#e0a800'" 
                                                             onmouseout="this.style.background='#ffc107'">
                                                         ✏️
                                                     </button>
                                                     <button onclick="deleteRecord('${tableName}', ${rowId})" 
-                                                            style="background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s;" 
+                                                            style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.3s;" 
                                                             title="Eliminar registro"
                                                             onmouseover="this.style.background='#c82333'" 
                                                             onmouseout="this.style.background='#dc3545'">
@@ -1200,7 +1242,7 @@
                     <div style="padding: 20px; background: #f8f9fa; border-top: 1px solid #e9ecef;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; gap: 15px; align-items: center;">
-                                <span style="color: #666; font-size: 14px;">Mostrando ${sampleData.length} registros</span>
+                                <span style="color: #666; font-size: 14px;">Mostrando <span class="record-count">${sampleData.length}</span> registros</span>
                                 <div style="display: flex; gap: 8px;">
                                     <button onclick="deleteSelectedRecords('${tableName}')" 
                                             style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; opacity: 0.6;" 
@@ -1762,43 +1804,49 @@
                 modalContent.style.cssText = `
                     background: white;
                     border-radius: 12px;
-                    max-width: ${options.size === 'large' ? '90%' : '600px'};
-                    max-height: 90%;
+                    max-width: ${options.size === 'large' ? '95%' : options.size === 'xl' ? '98%' : '80%'};
+                    width: ${options.size === 'large' ? '950px' : options.size === 'xl' ? '1200px' : '750px'};
+                    max-height: 95%;
                     overflow-y: auto;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+                    border: 1px solid #e0e0e0;
                 `;
 
                 const header = document.createElement('div');
                 header.style.cssText = `
                     background: linear-gradient(135deg, #7cb342, #8bc34a);
                     color: white;
-                    padding: 20px 30px;
+                    padding: 25px 30px;
                     border-radius: 12px 12px 0 0;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    border-bottom: 2px solid rgba(255,255,255,0.1);
                 `;
 
                 const title = document.createElement('h2');
                 title.textContent = options.title;
-                title.style.cssText = 'margin: 0; font-size: 18px; font-weight: 600;';
+                title.style.cssText = 'margin: 0; font-size: 20px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.1);';
 
                 const closeBtn = document.createElement('button');
                 closeBtn.textContent = '×';
                 closeBtn.style.cssText = `
-                    background: none;
+                    background: rgba(255,255,255,0.15);
                     border: none;
                     color: white;
-                    font-size: 24px;
+                    font-size: 28px;
                     cursor: pointer;
                     padding: 0;
-                    width: 30px;
-                    height: 30px;
+                    width: 35px;
+                    height: 35px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     border-radius: 50%;
+                    transition: all 0.3s;
                 `;
+                closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(255,255,255,0.25)';
+                closeBtn.onmouseout = () => closeBtn.style.background = 'rgba(255,255,255,0.15)';
                 closeBtn.onclick = () => Modal.hide();
 
                 header.appendChild(title);
@@ -1806,6 +1854,7 @@
 
                 const body = document.createElement('div');
                 body.innerHTML = options.content;
+                body.style.cssText = 'padding: 30px;';
 
                 modalContent.appendChild(header);
                 modalContent.appendChild(body);
@@ -2111,9 +2160,945 @@
             openTableCRUD('empleados', 'Empleados', testTable);
         }
 
+        // ===== FUNCIONES CRUD =====
+
+        // Función para crear nuevo registro
+        function createNewRecord(tableName) {
+            console.log(`Creating new record for ${tableName}`);
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+
+            const fields = (table.fields || []).filter(field => field !== 'id');
+            const isLargeForm = fields.length > 6;
+            
+            const formFields = fields.map((field, index) => {
+                const fieldName = field.replace(/_/g, ' ').charAt(0).toUpperCase() + field.replace(/_/g, ' ').slice(1);
+                const inputType = getInputTypeForField(field);
+                
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2c3e50; font-size: 14px;">
+                            ${fieldName}:
+                        </label>
+                        <input type="${inputType}" 
+                               id="field_${field}" 
+                               name="${field}"
+                               style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: all 0.3s; box-sizing: border-box;"
+                               placeholder="Ingrese ${fieldName.toLowerCase()}"
+                               onfocus="this.style.borderColor='#7cb342'; this.style.boxShadow='0 0 0 3px rgba(124,179,66,0.1)'"
+                               onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'"
+                               ${field.includes('email') ? 'required' : ''}>
+                    </div>
+                `;
+            }).join('');
+
+            Modal.show({
+                title: `➕ Crear Nuevo Registro - ${table.title}`,
+                content: `
+                    <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #495057; font-size: 16px;">📋 Complete los siguientes campos</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 13px;">Los campos marcados con * son obligatorios</p>
+                    </div>
+                    
+                    <form id="createForm" onsubmit="submitNewRecord(event, '${tableName}')">
+                        <div style="display: grid; grid-template-columns: ${isLargeForm ? 'repeat(2, 1fr)' : '1fr'}; gap: 25px; margin-bottom: 30px;">
+                            ${formFields}
+                        </div>
+                        
+                        <div style="border-top: 2px solid #f0f0f0; padding-top: 25px; display: flex; gap: 15px; justify-content: end;">
+                            <button type="button" onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#5a6268'"
+                                    onmouseout="this.style.background='#6c757d'">
+                                ❌ Cancelar
+                            </button>
+                            <button type="submit" 
+                                    style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; box-shadow: 0 4px 15px rgba(40,167,69,0.2);"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(40,167,69,0.3)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(40,167,69,0.2)'">
+                                💾 Guardar Registro
+                            </button>
+                        </div>
+                    </form>
+                `,
+                size: isLargeForm ? 'large' : 'medium'
+            });
+        }
+
+        // Función para ver detalles de un registro
+        function viewRecord(tableName, recordId) {
+            console.log(`Viewing record ${recordId} from ${tableName}`);
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+
+            // Simular datos del registro
+            const recordData = generateFieldValues(table.fields, recordId - 1);
+            const fields = (table.fields || []);
+            const isLargeRecord = fields.length > 8;
+            
+            const detailFields = fields.map(field => {
+                const fieldName = field.replace(/_/g, ' ').charAt(0).toUpperCase() + field.replace(/_/g, ' ').slice(1);
+                const value = recordData[field] || `Valor ${field} ${recordId}`;
+                
+                // Determinar el tipo de campo para usar íconos apropiados
+                let icon = '📝';
+                if (field.includes('id')) icon = '🆔';
+                else if (field.includes('email') || field.includes('correo')) icon = '📧';
+                else if (field.includes('telefono') || field.includes('phone')) icon = '📞';
+                else if (field.includes('fecha') || field.includes('date')) icon = '📅';
+                else if (field.includes('nombre') || field.includes('name')) icon = '👤';
+                else if (field.includes('direccion') || field.includes('address')) icon = '🏠';
+                else if (field.includes('salario') || field.includes('sueldo') || field.includes('precio') || field.includes('amount')) icon = '💰';
+                else if (field.includes('estado') || field.includes('status')) icon = '📊';
+                
+                return `
+                    <div style="padding: 18px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 12px; border-left: 4px solid ${table.color || '#7cb342'}; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <span style="font-size: 20px;">${icon}</span>
+                            <div style="font-weight: 600; color: #2c3e50; font-size: 15px;">
+                                ${fieldName}
+                            </div>
+                        </div>
+                        <div style="color: #495057; font-size: 14px; padding-left: 32px; line-height: 1.4;">
+                            ${value}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            Modal.show({
+                title: `👁️ Ver Registro #${recordId} - ${table.title}`,
+                content: `
+                    <div style="background: linear-gradient(135deg, ${table.color || '#7cb342'}, ${table.color || '#8bc34a'}); padding: 25px; border-radius: 15px; margin-bottom: 25px; color: white; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">
+                            ${table.icon || '📋'}
+                        </div>
+                        <h3 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700;">Registro #${recordId}</h3>
+                        <p style="margin: 0; opacity: 0.9; font-size: 14px;">Información completa del registro en ${table.title}</p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: ${isLargeRecord ? 'repeat(2, 1fr)' : '1fr'}; gap: 20px; margin-bottom: 30px;">
+                        ${detailFields}
+                    </div>
+                    
+                    <div style="border-top: 2px solid #f0f0f0; padding-top: 25px; display: flex; gap: 15px; justify-content: space-between;">
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="window.print()" 
+                                    style="background: #17a2b8; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#138496'"
+                                    onmouseout="this.style.background='#17a2b8'">
+                                🖨️ Imprimir
+                            </button>
+                            <button onclick="exportRecord('${tableName}', ${recordId})" 
+                                    style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#5a6268'"
+                                    onmouseout="this.style.background='#6c757d'">
+                                📄 Exportar
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 15px;">
+                            <button onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#5a6268'"
+                                    onmouseout="this.style.background='#6c757d'">
+                                ❌ Cerrar
+                            </button>
+                            <button onclick="Modal.hide(); editRecord('${tableName}', ${recordId})" 
+                                    style="background: linear-gradient(135deg, #ffc107, #ffca2c); color: #212529; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255,193,7,0.2);"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(255,193,7,0.3)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255,193,7,0.2)'">
+                                ✏️ Editar Registro
+                            </button>
+                        </div>
+                    </div>
+                `,
+                size: isLargeRecord ? 'large' : 'medium'
+            });
+        }
+
+        // Función para editar un registro
+        function editRecord(tableName, recordId, buttonElement = null) {
+            console.log(`Editing record ${recordId} from ${tableName}`);
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+
+            // Simular datos existentes del registro
+            const existingData = generateFieldValues(table.fields, recordId - 1);
+            const fields = (table.fields || []).filter(field => field !== 'id');
+            const isLargeForm = fields.length > 6;
+
+            const formFields = fields.map(field => {
+                const fieldName = field.replace(/_/g, ' ').charAt(0).toUpperCase() + field.replace(/_/g, ' ').slice(1);
+                const inputType = getInputTypeForField(field);
+                const currentValue = existingData[field] || '';
+                
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #2c3e50; font-size: 14px;">
+                            ${fieldName}:
+                        </label>
+                        <input type="${inputType}" 
+                               id="field_${field}" 
+                               name="${field}"
+                               value="${currentValue}"
+                               style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: all 0.3s; box-sizing: border-box;"
+                               placeholder="Ingrese ${fieldName.toLowerCase()}"
+                               onfocus="this.style.borderColor='#ffc107'; this.style.boxShadow='0 0 0 3px rgba(255,193,7,0.1)'"
+                               onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'"
+                               ${field.includes('email') ? 'required' : ''}>
+                    </div>
+                `;
+            }).join('');
+
+            Modal.show({
+                title: `✏️ Editar Registro #${recordId} - ${table.title}`,
+                content: `
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                        <h4 style="margin: 0 0 10px 0; color: #856404; font-size: 16px;">📝 Modificar información existente</h4>
+                        <p style="margin: 0; color: #856404; font-size: 13px;">Los campos ya contienen los valores actuales del registro</p>
+                    </div>
+                    
+                    <form id="editForm" onsubmit="submitEditRecord(event, '${tableName}', ${recordId})">
+                        <div style="display: grid; grid-template-columns: ${isLargeForm ? 'repeat(2, 1fr)' : '1fr'}; gap: 25px; margin-bottom: 30px;">
+                            ${formFields}
+                        </div>
+                        
+                        <div style="border-top: 2px solid #f0f0f0; padding-top: 25px; display: flex; gap: 15px; justify-content: end;">
+                            <button type="button" onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#5a6268'"
+                                    onmouseout="this.style.background='#6c757d'">
+                                ❌ Cancelar
+                            </button>
+                            <button type="submit" 
+                                    style="background: linear-gradient(135deg, #ffc107, #ffca2c); color: #212529; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255,193,7,0.2);"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(255,193,7,0.3)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255,193,7,0.2)'">
+                                💾 Actualizar Registro
+                            </button>
+                        </div>
+                    </form>
+                `,
+                size: isLargeForm ? 'large' : 'medium'
+            });
+        }
+
+        // Función para eliminar un registro
+        function deleteRecord(tableName, recordId) {
+            console.log(`Deleting record ${recordId} from ${tableName}`);
+            
+            if (confirm(`¿Está seguro de que desea eliminar el registro #${recordId}?\\n\\nEsta acción no se puede deshacer.`)) {
+                // Simular eliminación
+                console.log(`Record ${recordId} deleted from ${tableName}`);
+                
+                // Mostrar mensaje de éxito
+                showNotification(`✅ Registro #${recordId} eliminado exitosamente`, 'success');
+                
+                // Remover la fila de la tabla
+                const row = document.querySelector(`[data-row-id="${recordId}"]`);
+                if (row) {
+                    row.style.transition = 'all 0.3s ease';
+                    row.style.transform = 'translateX(-100%)';
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                        row.remove();
+                        updateRecordCount();
+                    }, 300);
+                }
+            }
+        }
+
+        // Función auxiliar para determinar el tipo de input según el campo
+        function getInputTypeForField(field) {
+            if (field.includes('email')) return 'email';
+            if (field.includes('telefono') || field.includes('phone')) return 'tel';
+            if (field.includes('fecha') || field.includes('date')) return 'date';
+            if (field.includes('hora') || field.includes('time')) return 'time';
+            if (field.includes('precio') || field.includes('salario') || field.includes('monto')) return 'number';
+            if (field.includes('password') || field.includes('contraseña')) return 'password';
+            return 'text';
+        }
+
+        // Función para generar valores de campo según el tipo
+        function generateFieldValues(fields, index) {
+            const data = {};
+            fields.forEach(field => {
+                if (field === 'id') {
+                    data[field] = index + 1;
+                } else {
+                    data[field] = generateFieldValue(field, index);
+                }
+            });
+            return data;
+        }
+
+        // Función para enviar nuevo registro
+        function submitNewRecord(event, tableName) {
+            event.preventDefault();
+            console.log(`Submitting new record for ${tableName}`);
+            
+            const formData = new FormData(event.target);
+            const recordData = {};
+            
+            for (const [key, value] of formData.entries()) {
+                recordData[key] = value;
+            }
+            
+            console.log('New record data:', recordData);
+            
+            // Simular guardado exitoso
+            showNotification('✅ Registro creado exitosamente', 'success');
+            Modal.hide();
+            
+            // Recargar la tabla (simular)
+            setTimeout(() => {
+                location.reload(); // En una app real, solo actualizarías la tabla
+            }, 1000);
+        }
+
+        // Función para enviar edición de registro
+        function submitEditRecord(event, tableName, recordId) {
+            event.preventDefault();
+            console.log(`Submitting edit for record ${recordId} in ${tableName}`);
+            
+            const formData = new FormData(event.target);
+            const recordData = {};
+            
+            for (const [key, value] of formData.entries()) {
+                recordData[key] = value;
+            }
+            
+            console.log('Updated record data:', recordData);
+            
+            // Simular guardado exitoso
+            showNotification(`✅ Registro #${recordId} actualizado exitosamente`, 'success');
+            Modal.hide();
+            
+            // Actualizar la fila en la tabla (simular)
+            const row = document.querySelector(`[data-row-id="${recordId}"]`);
+            if (row) {
+                row.style.background = '#d4edda';
+                setTimeout(() => {
+                    row.style.background = 'white';
+                }, 2000);
+            }
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            
+            switch (type) {
+                case 'success':
+                    notification.style.background = '#28a745';
+                    break;
+                case 'error':
+                    notification.style.background = '#dc3545';
+                    break;
+                case 'warning':
+                    notification.style.background = '#ffc107';
+                    notification.style.color = '#212529';
+                    break;
+                default:
+                    notification.style.background = '#17a2b8';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Función para seleccionar todos los registros
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateBulkActionsVisibility();
+        }
+
+        // Función para actualizar visibilidad de acciones masivas
+        function updateBulkActionsVisibility() {
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const bulkActions = document.getElementById('bulkActions');
+            
+            if (bulkActions) {
+                if (checkedBoxes.length > 0) {
+                    bulkActions.style.display = 'flex';
+                    bulkActions.querySelector('.selected-count').textContent = `${checkedBoxes.length} registros seleccionados`;
+                } else {
+                    bulkActions.style.display = 'none';
+                }
+            }
+        }
+
+        // Función para actualizar contador de registros
+        function updateRecordCount() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const countElements = document.querySelectorAll('.record-count');
+            countElements.forEach(element => {
+                element.textContent = rows.length;
+            });
+        }
+
+        // Función para filtrar datos de la tabla
+        function filterTableData(searchTerm) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const filterField = document.getElementById('filterField').value;
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let shouldShow = false;
+                
+                if (!searchTerm) {
+                    shouldShow = true;
+                } else {
+                    cells.forEach((cell, index) => {
+                        const cellText = cell.textContent.toLowerCase();
+                        const searchLower = searchTerm.toLowerCase();
+                        
+                        if (filterField) {
+                            // Filtrar por campo específico
+                            const fieldIndex = getFieldIndex(filterField);
+                            if (index === fieldIndex && cellText.includes(searchLower)) {
+                                shouldShow = true;
+                            }
+                        } else {
+                            // Buscar en todos los campos
+                            if (cellText.includes(searchLower)) {
+                                shouldShow = true;
+                            }
+                        }
+                    });
+                }
+                
+                row.style.display = shouldShow ? '' : 'none';
+            });
+        }
+
+        // Función auxiliar para obtener el índice de un campo
+        function getFieldIndex(fieldName) {
+            const headers = document.querySelectorAll('#dataTable thead th');
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent.toLowerCase().includes(fieldName.toLowerCase())) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // ===== FUNCIONES DE ACCIONES MASIVAS =====
+
+        // Función para eliminar registros seleccionados
+        function deleteSelectedRecords(tableName) {
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const recordIds = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+            
+            if (recordIds.length === 0) {
+                alert('No hay registros seleccionados');
+                return;
+            }
+            
+            if (confirm(`¿Está seguro de que desea eliminar ${recordIds.length} registro(s)?\\n\\nEsta acción no se puede deshacer.`)) {
+                console.log(`Deleting records: ${recordIds.join(', ')} from ${tableName}`);
+                
+                // Simular eliminación y remover filas de la tabla
+                recordIds.forEach(recordId => {
+                    const row = document.querySelector(`[data-row-id="${recordId}"]`);
+                    if (row) {
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.transform = 'translateX(-100%)';
+                        row.style.opacity = '0';
+                        setTimeout(() => {
+                            row.remove();
+                            updateRecordCount();
+                        }, 300);
+                    }
+                });
+                
+                // Mostrar mensaje de éxito
+                showNotification(`✅ ${recordIds.length} registro(s) eliminado(s) exitosamente`, 'success');
+                
+                // Limpiar selección
+                clearSelection();
+            }
+        }
+
+        // Función para exportar registros seleccionados
+        function exportSelectedRecords(tableName) {
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const recordIds = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+            
+            if (recordIds.length === 0) {
+                alert('No hay registros seleccionados');
+                return;
+            }
+            
+            console.log(`Exporting records: ${recordIds.join(', ')} from ${tableName}`);
+            
+            // Simular exportación
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+            
+            // Crear datos CSV simulados
+            const headers = (table.fields || []).join(',');
+            const rows = recordIds.map(id => {
+                const data = generateFieldValues(table.fields, id - 1);
+                return (table.fields || []).map(field => data[field] || '').join(',');
+            });
+            
+            const csvContent = [headers, ...rows].join('\\n');
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${tableName}_seleccionados_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification(`📥 ${recordIds.length} registro(s) exportado(s) exitosamente`, 'success');
+        }
+
+        // Función para limpiar selección
+        function clearSelection() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            updateBulkActionsVisibility();
+        }
+
+        // ===== FUNCIONES PARA BOTONES DE CARTAS =====
+
+        // Función para ver estructura de tabla
+        function viewTableStructure(tableName, tableTitle, fields) {
+            console.log(`Viewing structure for ${tableName}`);
+            
+            const fieldList = fields.map((field, index) => {
+                const fieldType = getFieldType(field);
+                const isRequired = ['id', 'nombre', 'nombres', 'apellidos', 'email'].includes(field.toLowerCase());
+                
+                return `
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-weight: 600; color: #2c3e50; background: #f8f9fa;">${index + 1}</td>
+                        <td style="padding: 12px; font-family: 'Courier New', monospace; color: #5d6d7e;">${field}</td>
+                        <td style="padding: 12px; color: #7b68ee; font-weight: 600;">${fieldType}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            ${isRequired ? '<span style="color: #e74c3c; font-weight: 600;">✓</span>' : '<span style="color: #95a5a6;">-</span>'}
+                        </td>
+                        <td style="padding: 12px; font-size: 12px; color: #7f8c8d;">
+                            ${getFieldDescription(field)}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            Modal.show({
+                title: `🔍 Estructura de Tabla: ${tableTitle}`,
+                content: `
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 20px;">📊 ${tableTitle}</h3>
+                            <p style="margin: 0; opacity: 0.9;">Tabla: <strong>${tableName}</strong> | Campos: <strong>${fields.length}</strong></p>
+                        </div>
+                        
+                        <div style="overflow-x: auto; max-height: 400px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                            <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                                <thead style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600;">#</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600;">Campo</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600;">Tipo</th>
+                                        <th style="padding: 15px; text-align: center; font-weight: 600;">Requerido</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600;">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="background: white;">
+                                    ${fieldList}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: end;">
+                            <button onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                Cerrar
+                            </button>
+                            <button onclick="Modal.hide(); openTableCRUD('${tableName}', '${tableTitle}')" 
+                                    style="background: #7cb342; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                ✏️ Gestionar Datos
+                            </button>
+                        </div>
+                    </div>
+                `,
+                size: 'large'
+            });
+        }
+
+        // Función para exportar tabla completa
+        function exportTable(tableName, tableTitle) {
+            console.log(`Exporting table ${tableName}`);
+            
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+            
+            // Generar datos de muestra para exportar
+            const sampleData = generateRealisticSampleData(table, 50); // 50 registros
+            
+            // Crear CSV
+            const headers = (table.fields || []).join(',');
+            const rows = sampleData.map(row => {
+                return (table.fields || []).map(field => {
+                    const value = row[field] || '';
+                    // Escapar comillas en el CSV
+                    return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                }).join(',');
+            });
+            
+            const csvContent = [headers, ...rows].join('\\n');
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${tableName}_completo_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification(`📤 Tabla ${tableTitle} exportada exitosamente`, 'success');
+        }
+
+        // Función para mostrar menú de tabla
+        function showTableMenu(tableName, tableTitle) {
+            console.log(`Showing menu for ${tableName}`);
+            
+            Modal.show({
+                title: `⋮ Opciones de ${tableTitle}`,
+                content: `
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">🗃️</div>
+                            <h3 style="margin: 0; color: #2c3e50;">${tableTitle}</h3>
+                            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Seleccione una acción para realizar</p>
+                        </div>
+                        
+                        <div style="display: grid; gap: 12px;">
+                            <button onclick="Modal.hide(); openTableCRUD('${tableName}', '${tableTitle}')" 
+                                    style="background: #7cb342; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#558b2f'" 
+                                    onmouseout="this.style.background='#7cb342'">
+                                <span style="font-size: 20px;">✏️</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Gestionar Registros</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Ver, crear, editar y eliminar registros</div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="Modal.hide(); viewTableStructure('${tableName}', '${tableTitle}', [])" 
+                                    style="background: #17a2b8; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#138496'" 
+                                    onmouseout="this.style.background='#17a2b8'">
+                                <span style="font-size: 20px;">🔍</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Ver Estructura</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Consultar campos y tipos de datos</div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="Modal.hide(); exportTable('${tableName}', '${tableTitle}')" 
+                                    style="background: #28a745; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#218838'" 
+                                    onmouseout="this.style.background='#28a745'">
+                                <span style="font-size: 20px;">📤</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Exportar Datos</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Descargar tabla completa en CSV</div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="showImportDialog('${tableName}', '${tableTitle}')" 
+                                    style="background: #ffc107; color: #212529; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#e0a800'" 
+                                    onmouseout="this.style.background='#ffc107'">
+                                <span style="font-size: 20px;">📥</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Importar Datos</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Cargar datos desde archivo CSV</div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="showTableStats('${tableName}', '${tableTitle}')" 
+                                    style="background: #6f42c1; color: white; border: none; padding: 15px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#5a359c'" 
+                                    onmouseout="this.style.background='#6f42c1'">
+                                <span style="font-size: 20px;">📊</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Estadísticas</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Ver análisis y métricas de datos</div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                `,
+                size: 'medium'
+            });
+        }
+
+        // ===== FUNCIONES AUXILIARES =====
+
+        // Función para obtener tipo de campo
+        function getFieldType(fieldName) {
+            const field = fieldName.toLowerCase();
+            if (field === 'id' || field.includes('_id')) return 'INTEGER';
+            if (field.includes('fecha') || field.includes('date')) return 'DATE';
+            if (field.includes('hora') || field.includes('time')) return 'TIME';
+            if (field.includes('email') || field.includes('correo')) return 'EMAIL';
+            if (field.includes('telefono') || field.includes('phone')) return 'PHONE';
+            if (field.includes('precio') || field.includes('monto') || field.includes('salario')) return 'DECIMAL';
+            if (field.includes('descripcion') || field.includes('comentario')) return 'TEXT';
+            if (field.includes('estado') || field.includes('activo')) return 'BOOLEAN';
+            if (field.includes('path') || field.includes('url')) return 'FILE';
+            return 'VARCHAR';
+        }
+
+        // Función para obtener descripción de campo
+        function getFieldDescription(fieldName) {
+            const descriptions = {
+                'id': 'Identificador único del registro',
+                'nombres': 'Nombre(s) de la persona',
+                'apellidos': 'Apellido(s) de la persona',
+                'email': 'Dirección de correo electrónico',
+                'telefono': 'Número de teléfono',
+                'created_at': 'Fecha de creación del registro',
+                'updated_at': 'Fecha de última actualización',
+                'deleted_at': 'Fecha de eliminación (soft delete)',
+                'estado': 'Estado del registro (activo/inactivo)',
+                'empresa_id': 'Referencia a la empresa',
+                'dpi': 'Documento Personal de Identificación'
+            };
+            
+            return descriptions[fieldName.toLowerCase()] || 'Campo de datos de la tabla';
+        }
+
+        // Función para mostrar diálogo de importación
+        function showImportDialog(tableName, tableTitle) {
+            Modal.show({
+                title: `📥 Importar Datos - ${tableTitle}`,
+                content: `
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;">
+                            <h4 style="margin: 0 0 10px 0; color: #856404;">📋 Instrucciones</h4>
+                            <ul style="margin: 0; padding-left: 20px; color: #856404;">
+                                <li>El archivo debe estar en formato CSV</li>
+                                <li>La primera fila debe contener los nombres de los campos</li>
+                                <li>Los datos deben coincidir con la estructura de la tabla</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">
+                                Seleccionar Archivo CSV:
+                            </label>
+                            <input type="file" 
+                                   accept=".csv" 
+                                   id="importFile"
+                                   style="width: 100%; padding: 10px; border: 2px dashed #7cb342; border-radius: 8px; background: #f8f9fa; cursor: pointer;">
+                        </div>
+                        
+                        <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: end;">
+                            <button onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                Cancelar
+                            </button>
+                            <button onclick="processImport('${tableName}', '${tableTitle}')" 
+                                    style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                📥 Importar
+                            </button>
+                        </div>
+                    </div>
+                `,
+                size: 'medium'
+            });
+        }
+
+        // Función para procesar importación
+        function processImport(tableName, tableTitle) {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) {
+                alert('Por favor seleccione un archivo CSV');
+                return;
+            }
+            
+            // Simular procesamiento
+            console.log(`Processing import for ${tableName}`);
+            showNotification('📥 Importación procesada exitosamente (simulación)', 'success');
+            Modal.hide();
+        }
+
+        // Función para mostrar estadísticas
+        function showTableStats(tableName, tableTitle) {
+            const tables = getTableCards();
+            const table = tables.find(t => t.name === tableName);
+            
+            if (!table) {
+                alert('Tabla no encontrada');
+                return;
+            }
+            
+            // Generar estadísticas simuladas
+            const stats = {
+                totalRecords: table.records,
+                activeRecords: Math.floor(table.records * 0.95),
+                lastUpdate: new Date().toLocaleDateString(),
+                avgFieldLength: Math.floor(Math.random() * 50) + 20,
+                nullValues: Math.floor(table.records * 0.02)
+            };
+            
+            Modal.show({
+                title: `📊 Estadísticas - ${tableTitle}`,
+                content: `
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #2c3e50; margin: 0 0 15px 0;">Resumen de Datos</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700;">${stats.totalRecords.toLocaleString()}</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">Total Registros</div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700;">${stats.activeRecords.toLocaleString()}</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">Registros Activos</div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700;">${table.fields.length}</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">Campos</div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700;">${stats.avgFieldLength}</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">Longitud Promedio</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #2c3e50; margin: 0 0 10px 0;">Información Adicional</h4>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <p style="margin: 0 0 8px 0;"><strong>Última actualización:</strong> ${stats.lastUpdate}</p>
+                                <p style="margin: 0 0 8px 0;"><strong>Valores nulos:</strong> ${stats.nullValues} registros</p>
+                                <p style="margin: 0;"><strong>Categoría:</strong> ${table.category || 'General'}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: end;">
+                            <button onclick="Modal.hide()" 
+                                    style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                Cerrar
+                            </button>
+                            <button onclick="Modal.hide(); openTableCRUD('${tableName}', '${tableTitle}')" 
+                                    style="background: #7cb342; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                                ✏️ Gestionar Datos
+                            </button>
+                        </div>
+                    </div>
+                `,
+                size: 'large'
+            });
+        }
+
         // Make functions globally accessible for debugging
         window.testTableCRUD = testTableCRUD;
         window.openTableCRUD = openTableCRUD;
+        window.createNewRecord = createNewRecord;
+        window.viewRecord = viewRecord;
+        window.editRecord = editRecord;
+        window.deleteRecord = deleteRecord;
+        window.toggleSelectAll = toggleSelectAll;
+        window.filterTableData = filterTableData;
+        window.deleteSelectedRecords = deleteSelectedRecords;
+        window.exportSelectedRecords = exportSelectedRecords;
+        window.clearSelection = clearSelection;
+        window.viewTableStructure = viewTableStructure;
+        window.exportTable = exportTable;
+        window.showTableMenu = showTableMenu;
+        window.showImportDialog = showImportDialog;
+        window.processImport = processImport;
+        window.showTableStats = showTableStats;
+        window.showMaintenanceTab = showMaintenanceTab;
+        window.getTableCards = getTableCards;
+        window.generateTableCardsHTML = generateTableCardsHTML;
+        window.forceRefreshMaintenance = forceRefreshMaintenance;
         function updateDateTime() {
             const now = new Date();
             const dateTimeElement = document.getElementById('currentDateTime');
